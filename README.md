@@ -9,16 +9,16 @@ capabilities, and integration patterns. Each document evaluates a specific CC
 feature through the lens of practical adoption: what it does, how it works,
 when to use it, and when to skip it.
 
-Topics span the full CC surface area:
+## Contents
 
-| Category | Analyses |
+| Directory | Analyses |
 |---|---|
-| **Agent & Orchestration** | Agent Teams, Skills adoption, Ralph loop enhancements |
-| **Execution & Infrastructure** | Sandboxing, cloud sessions, remote control, remote access landscape |
-| **Context & Memory** | Extended context (1M tokens), memory system, llms.txt |
-| **Configuration & Providers** | Model/provider configuration, fast mode, hooks system |
-| **Packaging & Enterprise** | Plugin packaging, cowork/enterprise plugins, Chrome extension |
-| **Planning & Tracking** | Adoption plan, changelog feature scan |
+| [`agent-orchestration/`](agent-orchestration/) | Agent Teams, Skills adoption, Ralph loop enhancements |
+| [`execution-infrastructure/`](execution-infrastructure/) | Sandboxing, cloud sessions, remote control, remote access landscape |
+| [`context-memory/`](context-memory/) | Extended context (1M tokens), memory system, llms.txt |
+| [`configuration/`](configuration/) | Model/provider configuration, fast mode, hooks system |
+| [`packaging-enterprise/`](packaging-enterprise/) | Plugin packaging, cowork/enterprise plugins, Chrome extension |
+| [`CC-changelog-feature-scan.md`](CC-changelog-feature-scan.md) | Changelog triage of new CC features (v2.1.0–2.1.71) |
 
 ## Structure
 
