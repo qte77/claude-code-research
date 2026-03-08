@@ -20,6 +20,8 @@ when to use it, and when to skip it.
 | [`docs/packaging-enterprise/`](docs/packaging-enterprise/) | Plugin packaging, cowork/enterprise plugins, Chrome extension |
 | [`docs/CC-changelog-feature-scan.md`](docs/CC-changelog-feature-scan.md) | Changelog triage of new CC features (v2.1.0–2.1.71) |
 
+| [`examples/`](examples/) | Settings, statusline, rules, and user preferences |
+
 ## Structure
 
 Each file is a standalone analysis following a consistent format:
