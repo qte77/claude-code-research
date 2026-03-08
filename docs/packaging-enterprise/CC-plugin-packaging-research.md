@@ -20,7 +20,7 @@ Plugins are portable directory bundles that extend Claude Code with commands, ag
 ```text
 my-plugin/
 ├── .claude-plugin/
-│   └── plugin.json          # Required: manifest
+│   └── plugin.json          # Optional: manifest (auto-discovery if omitted)
 ├── commands/                 # Custom slash commands
 │   └── custom-cmd.md
 ├── agents/                   # Custom subagents
@@ -159,6 +159,99 @@ Based on external research on plugin adoption patterns:
 - Skills reference **project-specific files** (e.g., source modules unique to your project)
 - No cross-project reuse demand exists
 
+## Common Pitfalls
+
+Observed failure modes when packaging plugins, derived from production experience
+with the [qte77/claude-code-utils-plugin](https://github.com/qte77/claude-code-utils-plugin)
+marketplace ([PR #16](https://github.com/qte77/claude-code-utils-plugin/pull/16))
+and cross-referencing official Anthropic plugins ([source][cc-plugins-official]).
+
+### 1. Duplicate Hooks from Explicit Manifest Reference
+
+**Symptom**: "Duplicate hooks file detected: ./hooks/hooks.json resolves to
+already-loaded file"
+
+**Cause**: `plugin.json` includes `"hooks": "./hooks/hooks.json"`, but CC
+auto-loads `hooks/hooks.json` at the standard path by convention. The manifest
+field is *additive* — it loads files *in addition to* the auto-discovered
+standard path ([source][cc-plugins-ref]).
+
+**Fix**: Remove the `hooks` field from `plugin.json` when hooks live at the
+standard `hooks/hooks.json` path. Only use the field for non-standard paths.
+
+```json
+// WRONG — causes duplicate error
+{
+  "name": "my-plugin",
+  "hooks": "./hooks/hooks.json"
+}
+
+// CORRECT — hooks/hooks.json auto-discovered
+{
+  "name": "my-plugin"
+}
+
+// CORRECT — additional hooks file at non-standard path
+{
+  "name": "my-plugin",
+  "hooks": "./config/extra-hooks.json"
+}
+```
+
+**Evidence**: All official Anthropic plugins (security-guidance, hookify,
+ralph-loop, code-review) omit the `hooks` field entirely and rely on
+auto-discovery ([source][cc-plugins-official]).
+
+### 2. Manifest is Optional — Prefer Auto-Discovery
+
+The `plugin.json` manifest is optional. If omitted, CC auto-discovers components
+at standard paths and derives the plugin name from the directory name
+([source][cc-plugins-ref]).
+
+**Rule**: Only add component path fields (`commands`, `agents`, `skills`,
+`hooks`, `mcpServers`) when files are at *non-standard* locations. Standard
+locations are always auto-discovered.
+
+<!-- markdownlint-disable MD013 -->
+
+| Component | Standard Path (auto-discovered) | Manifest field needed? |
+| --------- | ------------------------------- | ---------------------- |
+| Hooks | `hooks/hooks.json` | No — only for additional hook files |
+| MCP | `.mcp.json` | No — only for additional configs |
+| LSP | `.lsp.json` | No — only for additional configs |
+| Skills | `skills/` | No — only for additional directories |
+| Agents | `agents/` | No — only for additional files |
+| Commands | `commands/` | No — only for additional files |
+
+<!-- markdownlint-enable MD013 -->
+
+### 3. Plugin Cache Staleness After Manifest Changes
+
+Marketplace plugins are copied to `~/.claude/plugins/cache/` at install time.
+Changing `plugin.json` in the marketplace source does **not** propagate to
+already-installed users until they run `claude plugin update` or the version
+is bumped ([source][cc-plugins-ref]).
+
+**Implication**: Always bump `version` in `plugin.json` (or `marketplace.json`)
+when publishing fixes. Users with cached copies won't see changes otherwise.
+
+### 4. Official Plugin Pattern — Minimal Manifests
+
+Anthropic's official plugins use minimal manifests with only metadata fields
+(`name`, `description`, `author`). No component path fields. This is the
+recommended baseline ([source][cc-plugins-official]):
+
+```json
+{
+  "name": "security-guidance",
+  "description": "Security reminder hook that warns about potential security issues",
+  "author": {
+    "name": "Anthropic",
+    "email": "support@anthropic.com"
+  }
+}
+```
+
 ## Actionable Recommendation
 
 ### Immediate (Tier 1)
@@ -200,3 +293,4 @@ This is YAGNI until a second project needs these skills.
 [plugin-structure]: https://claude-plugins.dev/skills/@anthropics/claude-plugins-official/plugin-structure
 [skill-dev]: https://lobehub.com/skills/sjnims-plugin-dev-skill-development
 [cc-mem]: https://code.claude.com/docs/en/memory
+[cc-plugins-official]: https://github.com/anthropics/claude-plugins-official
