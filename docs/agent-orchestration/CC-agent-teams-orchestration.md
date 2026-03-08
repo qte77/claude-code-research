@@ -100,13 +100,13 @@ Restricts lead to coordination-only (spawn, assign, synthesize). Blocks direct i
 
 **Agent Teams**: 3+ independent files, multiple review perspectives, competing approaches, large refactoring. See Test Results section below.
 
-## Benchmarking PydanticAI MAS vs CC-Style Baselines
+## Benchmarking a MAS vs CC-Style Baselines
 
-Compare MAS (Manager -> Researcher -> Analyst -> Synthesizer) against simpler patterns using same three-tier evaluation pipeline.
+Compare a multi-agent system (MAS) against simpler patterns using the same evaluation pipeline.
 
-**Baselines** (all PydanticAI within a shared codebase):
+**Example baselines** (all within a shared codebase):
 
-1. **PydanticAI MAS** (current): Sequential delegation with approval loop, Pydantic models, token tracking, Logfire/Phoenix observability
+1. **MAS** (e.g., Manager → Researcher → Analyst → Synthesizer): Sequential delegation with approval loop, structured data models, token tracking, observability
 2. **Single-Agent**: One agent, one pass, no delegation — tests value of multi-agent orchestration
 3. **Parallel-Agents**: Independent agents via `asyncio.gather`, coordinator merges — tests parallel vs sequential
 
@@ -124,7 +124,7 @@ Compare MAS (Manager -> Researcher -> Analyst -> Synthesizer) against simpler pa
 
 ## Tracing & Observability
 
-**Gap**: PydanticAI MAS has Logfire/Phoenix tracing; CC baselines need equivalent.
+**Gap**: A MAS with application-level tracing (e.g., Logfire/Phoenix) needs equivalent coverage for CC baselines.
 
 ### Approach Comparison
 
@@ -134,14 +134,14 @@ Compare MAS (Manager -> Researcher -> Analyst -> Synthesizer) against simpler pa
 | --------- | ----------------------------- | ---------------- | ------------------- |
 | Same Phoenix instance | Yes | Yes | No (file-based) |
 | Token/cost tracking | Yes | No | No |
-| Tool-level traces | Yes | Yes | Yes (via CCTraceAdapter) |
+| Tool-level traces | Yes | Yes | Yes (via a trace adapter parsing `raw_stream.jsonl`) |
 | LLM-call traces | Yes | No | No |
-| Trace spans | No — upstream limitation | No | Yes — via CCTraceAdapter |
+| Trace spans | No — upstream limitation | No | Yes — via artifact collection |
 | Setup complexity | Medium (Collector) | Low (script) | Low (parse files) |
 | Unified dashboard | Yes | Yes | No |
 | In settings.json | Yes (vars exist, currently disabled) | No | No |
 
-**Upstream limitation**: CC OTel exports metrics and logs only — no trace spans. This is a known limitation tracked in [anthropics/claude-code#9584](https://github.com/anthropics/claude-code/issues/9584) and [#2090](https://github.com/anthropics/claude-code/issues/2090). Until resolved, trace-level execution analysis requires artifact collection via `CCTraceAdapter`.
+**Upstream limitation**: CC OTel exports metrics and logs only — no trace spans. This is a known limitation tracked in [anthropics/claude-code#9584](https://github.com/anthropics/claude-code/issues/9584) and [#2090](https://github.com/anthropics/claude-code/issues/2090). Until resolved, trace-level execution analysis requires artifact collection: parse `raw_stream.jsonl` for `TeamCreate`, `Task`, `TodoWrite` events into structured trace data.
 
 <!-- markdownlint-enable MD013 -->
 
@@ -208,7 +208,7 @@ CC OTel integrates at the infrastructure level (env vars + Phoenix endpoint), se
 
 ### Observability Strategy for CC Evaluation
 
-- **Artifact collection is primary** for evaluation: `CCTraceAdapter` parses `raw_stream.jsonl` for `TeamCreate`, `Task`, `TodoWrite` events → `GraphTraceData` → evaluation pipeline
+- **Artifact collection is primary** for evaluation: parse `raw_stream.jsonl` for `TeamCreate`, `Task`, `TodoWrite` events into structured trace data → feed evaluation pipeline
 - **OTel is supplementary** for cost/token dashboards only (metrics + logs, no trace spans due to upstream limitation)
 - **`settings.json` OTel vars** (`OTEL_EXPORTER_OTLP_PROTOCOL`, `OTEL_LOGS_EXPORTER`, `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL`) are disabled by default (empty string values). Enable to collect cost/token metrics in Phoenix; does not provide trace spans.
 
@@ -243,7 +243,7 @@ Contains complete team orchestration metadata:
 ```json
 {
   "name": "parallel-code-review",
-  "description": "Parallel review of evaluation_pipeline.py...",
+  "description": "Parallel review of src/pipeline.py...",
   "createdAt": 1770854157287,
   "leadAgentId": "team-lead@parallel-code-review",
   "leadSessionId": "e41ee506-14e0-49c7-b933-de43cac57810",
@@ -283,16 +283,16 @@ Each agent has its own mailbox file containing all messages received:
 [
   {
     "from": "quality-reviewer",
-    "text": "## Quality Review Findings: evaluation_pipeline.py\n\n...",
-    "summary": "Quality review findings for evaluation_pipeline.py",
+    "text": "## Quality Review Findings: src/pipeline.py\n\n...",
+    "summary": "Quality review findings for src/pipeline.py",
     "timestamp": "2026-02-11T23:57:29.518Z",
     "color": "green",
     "read": true
   },
   {
     "from": "security-reviewer",
-    "text": "# Security Review: evaluation_pipeline.py\n\n...",
-    "summary": "Security review findings for evaluation_pipeline.py",
+    "text": "# Security Review: src/pipeline.py\n\n...",
+    "summary": "Security review findings for src/pipeline.py",
     "timestamp": "2026-02-11T23:57:55.822Z",
     "color": "blue",
     "read": true
@@ -323,8 +323,8 @@ Each task is tracked in its own JSON file:
 ```json
 {
   "id": "1",
-  "subject": "Security review of evaluation_pipeline.py",
-  "description": "Review src/evals/pipeline.py for...",
+  "subject": "Security review of src/pipeline.py",
+  "description": "Review src/pipeline.py for...",
   "activeForm": "Reviewing security vulnerabilities",
   "owner": "security-reviewer",
   "status": "completed",
@@ -335,20 +335,20 @@ Each task is tracked in its own JSON file:
 
 **Key behaviors**: File locking prevents race conditions on task claiming. Teammates inherit lead's permissions. Context is fully isolated per teammate.
 
-### Test Results (2026-02-11)
+### Example Results
 
 3-teammate parallel code review of a single source file:
 
-- **Team**: Lead (Sonnet 4.5) + security/quality/coverage reviewers (Opus 4.6 each)
+- **Team**: Lead + security/quality/coverage reviewers (one model each)
 - **Execution**: ~26 seconds for 3 complete reviews (quality first, coverage +6s, security +20s)
 - **Dependencies**: Tasks 1-3 ran in parallel; task 4 (aggregation) waited for all 3
-- **Output**: Full review content preserved in mailboxes (19k+ chars each)
+- **Output**: Full review content preserved in mailboxes
 
-### Phoenix/Logfire Correlation
+### Trace Correlation Strategy
 
-- **Application traces** (PydanticAI MAS): Phoenix OTLP endpoint (`:6006` HTTP, `:4317` gRPC), Logfire SDK
+- **Application traces** (MAS): Application-level tracing (e.g., Phoenix OTLP endpoint, Logfire SDK)
 - **Agent Teams traces** (CC orchestration): `~/.claude/teams/` + `~/.claude/tasks/`, file-based JSON
-- **Unified approach**: Phoenix/Logfire for application-level, CC traces for orchestration-level, cross-reference by timestamps
+- **Unified approach**: Application-level tracing for the MAS layer, CC artifact files for the orchestration layer; cross-reference by timestamps
 
 ### Sources
 

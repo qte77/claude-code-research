@@ -113,12 +113,17 @@ A well-structured project might use both systems as follows:
 
 ### CLAUDE.md Structure
 
+The filenames below are examples — projects use different names for these concerns:
+
 ```text
 CLAUDE.md              → @AGENTS.md import (or equivalent entry point)
 AGENTS.md              → Behavioral rules, compliance, decision framework
+                          (example name; use any name that fits your project)
 CONTRIBUTING.md        → Technical workflows, coding standards
-AGENT_REQUESTS.md      → Escalation protocol
-AGENT_LEARNINGS.md     → Accumulated pattern knowledge
+ESCALATION.md          → Escalation protocol
+                          (example: "AGENT_REQUESTS.md" in some projects)
+LEARNINGS.md           → Accumulated pattern knowledge
+                          (example: "AGENT_LEARNINGS.md" in some projects)
 .claude/rules/
 ├── context-management.md  → Context window principles
 └── core-principles.md     → KISS/DRY/YAGNI mandatory principles

@@ -11,9 +11,9 @@ created: 2026-03-07
 
 Ralph is an autonomous TDD development loop driving `claude -p` to implement stories from a `prd.json` task file. Skills adoption context is in [CC-skills-adoption-analysis.md](CC-skills-adoption-analysis.md).
 
-## Known Gaps
+## Common Implementation Gaps
 
-Identified from codebase exploration of the Ralph implementation — these are bugs or inconsistencies, not feature requests.
+These are patterns to watch for in any Ralph implementation — bugs or inconsistencies that commonly appear, not feature requests.
 
 ### High Priority (Broken Functionality)
 
@@ -21,8 +21,8 @@ Identified from codebase exploration of the Ralph implementation — these are b
 
 | Gap | Impact | Fix |
 | --- | ------ | --- |
-| **`ralph_status` uses legacy `.passes` field** | Always shows 0 completed stories on current `status` schema | Change `jq` query from `.passes == true` to `.status == "passed"` in the Makefile recipe |
-| **Documentation path inconsistency** | Project instructions reference `.claude/scripts/ralph/` but actual path is `ralph/scripts/` | Update project instructions to reference `ralph/scripts/` |
+| **Status field name mismatch** | `jq` query references a legacy field name that no longer matches the current `status` schema — always shows 0 completed stories | Audit `jq` queries in Makefile recipes; align field names with the current schema (e.g., `.status == "passed"` rather than a legacy `.passes == true`) |
+| **Documentation path drift** | Project instructions reference one script path (e.g., `.claude/scripts/ralph/`) but actual implementation lives elsewhere (e.g., `ralph/scripts/`) | Update project instructions to reference the actual script location; treat this as a living sync issue whenever scripts are moved |
 
 <!-- markdownlint-enable MD013 -->
 
@@ -32,9 +32,9 @@ Identified from codebase exploration of the Ralph implementation — these are b
 
 | Gap | Impact | Fix |
 | --- | ------ | --- |
-| **`/tmp` path collision across worktrees** | `BASELINE_FILE`, `RETRY_CONTEXT_FILE`, `TDD_VERIFIED_DIR` use fixed `/tmp/claude/ralph_*` paths — concurrent worktrees overwrite each other | Namespace paths by worktree: `/tmp/claude/ralph_<worktree_hash>/` |
+| **Shared `/tmp` paths across worktrees** | State-tracking files (baseline, retry context, TDD-verified directory) use fixed `/tmp` paths — concurrent worktrees overwrite each other | Namespace paths by worktree identity: `/tmp/claude/ralph_<worktree_hash>/` |
 | **Stale snapshot tests in teams mode** | Story A's baseline doesn't account for story B's concurrent changes | No clean fix without sequential validation; document as known limitation |
-| **File-conflict dependencies not auto-detected** | `generate_prd_json.py` doesn't auto-detect file overlaps between stories | Add `--check-overlaps` flag to `generate_prd_json.py` that warns when stories share files without `depends_on` |
+| **File-conflict dependencies not auto-detected** | The PRD/story generation script doesn't auto-detect file overlaps between stories | Add an `--check-overlaps` flag to the story generation script that warns when stories share files without an explicit `depends_on` |
 
 <!-- markdownlint-enable MD013 -->
 
@@ -113,13 +113,13 @@ Community-published Ralph loop as a CC Skill. Uses `.claude/ralph-loop.local.md`
 
 ### Tier 1 — Fix Now (bugs, 15 min each)
 
-1. **Fix `ralph_status` jq query**: `.passes == true` → `.status == "passed"`
-2. **Fix project instructions path reference**: `.claude/scripts/ralph/` → `ralph/scripts/`
+1. **Fix status `jq` query**: Align with current schema field name (e.g., `.status == "passed"` rather than a legacy field)
+2. **Fix project instructions path reference**: Sync documented script path with actual filesystem location
 
 ### Tier 2 — Improve Next Iteration (robustness)
 
 3. **Namespace `/tmp` paths by worktree**: Prevent concurrent worktree collisions
-4. **Add `--check-overlaps` to `generate_prd_json.py`**: Warn on file conflicts without `depends_on`
+4. **Add `--check-overlaps` to story generation script**: Warn on file conflicts without `depends_on`
 5. **Add De-Sloppify pass**: Post-story cleanup iteration — run the project's fast validation command with a "fix all lint/type/complexity issues" prompt before marking story passed
 
 ### Tier 3 — Monitor (not yet actionable)

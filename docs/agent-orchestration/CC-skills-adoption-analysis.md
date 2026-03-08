@@ -19,14 +19,16 @@ with additional frontmatter fields.
 
 Autonomous development loop adoption is documented separately (see the Ralph loop references in [CC-ralph-enhancement-research.md](CC-ralph-enhancement-research.md)).
 
-## Skills Created (Initial Adoption)
+## Example Skills (Initial Adoption Pattern)
 
-| Skill | Location | Purpose |
+The table below shows a representative set of skills covering the main capability areas. Naming follows the lowercase-hyphenated convention required by the Agent Skills spec. Your project skills will differ.
+
+| Skill (example name) | Location | Purpose |
 | ----- | -------- | ------- |
-| `designing-backend` | `.claude/skills/designing-backend/SKILL.md` | Backend architecture planning |
-| `implementing-python` | `.claude/skills/implementing-python/SKILL.md` | Python code implementation |
-| `reviewing-code` | `.claude/skills/reviewing-code/SKILL.md` | Code quality review |
-| `generating-prd` | `.claude/skills/generating-prd/SKILL.md` | PRD.md → prd.json conversion |
+| `backend-design` | `.claude/skills/backend-design/SKILL.md` | Backend architecture planning |
+| `code-implementation` | `.claude/skills/code-implementation/SKILL.md` | Language-specific code implementation |
+| `code-review` | `.claude/skills/code-review/SKILL.md` | Code quality review |
+| `requirements-generation` | `.claude/skills/requirements-generation/SKILL.md` | Requirements document conversion |
 
 A project can grow to many more skills over time. Run
 `ls .claude/skills/` for the current list in your project.
@@ -81,12 +83,12 @@ The skills system has evolved significantly since initial adoption:
 
 ## Skills Auto-Discovery
 
-Skills are auto-discovered by Claude Code based on task context. Example triggers:
+Skills are auto-discovered by Claude Code based on task context. Example triggers (using the example skill names from above):
 
-- Requesting backend design → `designing-backend` activates
-- Asking to implement Python → `implementing-python` activates
-- Requesting code review → `reviewing-code` activates
-- Converting a requirements document to JSON → `generating-prd` activates
+- Requesting backend design → `backend-design` activates
+- Asking to implement code → `code-implementation` activates
+- Requesting code review → `code-review` activates
+- Converting a requirements document → `requirements-generation` activates
 
 ## Design Decision: Skills vs Agents
 

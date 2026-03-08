@@ -147,14 +147,14 @@ A template file (e.g., `.github/templates/llms.txt.tpl`) holds curated markdown 
 
 ### Workflows
 
-**`write-llms-txt.yaml`** — Generates `docs/llms.txt` from template:
+**Generation workflow** (e.g., `write-llms-txt.yaml`) — Generates `docs/llms.txt` from template:
 
 1. Validates all template links point to existing files
 2. Substitutes `${BLOB}` with `github.com/{repo}/blob/main`
 3. Commits `docs/llms.txt` if changed
 4. Triggers on push to `main` when docs/src/template change
 
-**`generate-deploy-mkdocs-ghpages.yaml`** — Deploys docs site:
+**Deploy workflow** (e.g., `deploy-docs.yaml`) — Deploys docs site:
 
 1. Copies `docs/llms.txt` to `site/llms.txt` at site root
 2. Serves raw llms.txt at the documentation site root per spec

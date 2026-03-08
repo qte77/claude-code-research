@@ -41,7 +41,7 @@ New `includeGitInstructions` setting and `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` 
 
 ### HTTP Hooks (v2.1.63)
 
-JSON POST/receive on hook events. See [CC-hooks-system-analysis.md](CC-hooks-system-analysis.md) for full hooks reference.
+JSON POST/receive on hook events. See [CC-hooks-system-analysis.md](configuration/CC-hooks-system-analysis.md) for full hooks reference.
 
 ### Agent Worktree Isolation (`isolation: worktree`) (v2.1.50)
 
@@ -51,7 +51,7 @@ Spawn subagents in isolated git worktrees via `Agent(isolation: "worktree")`. Wo
 
 ### `Setup` Hook Event (v2.1.10)
 
-One-time repo maintenance on session start. See [CC-hooks-system-analysis.md](CC-hooks-system-analysis.md).
+One-time repo maintenance on session start. See [CC-hooks-system-analysis.md](configuration/CC-hooks-system-analysis.md).
 
 ### Task Tool Metrics (v2.1.30)
 
@@ -61,7 +61,7 @@ Task completions now include metrics: tokens consumed, tool uses, and duration. 
 
 ### TeammateIdle + TaskCompleted Hook Events (v2.1.33)
 
-Agent Teams lifecycle hooks. See [CC-hooks-system-analysis.md](CC-hooks-system-analysis.md).
+Agent Teams lifecycle hooks. See [CC-hooks-system-analysis.md](configuration/CC-hooks-system-analysis.md).
 
 ### Memory Frontmatter for Agents (v2.1.33)
 
@@ -111,17 +111,17 @@ Hook fires when CC configuration changes — useful for security auditing. ([sou
 
 | Feature | Covered In |
 | ------- | ---------- |
-| Remote Control (`claude remote-control`) | [CC-remote-control-analysis.md](CC-remote-control-analysis.md) |
-| Agent Teams (TeamCreate, Task tools) | [CC-agent-teams-orchestration.md](CC-agent-teams-orchestration.md) |
-| Fast mode (Opus 4.6) | [CC-fast-mode-analysis.md](CC-fast-mode-analysis.md) |
-| Auto memory + CLAUDE.md hierarchy | [CC-memory-system-analysis.md](CC-memory-system-analysis.md) |
-| Cloud sessions (`claude --remote`) | [CC-cloud-sessions-analysis.md](CC-cloud-sessions-analysis.md) |
-| Skills (auto-discovery, SKILL.md) | [CC-skills-adoption-analysis.md](CC-skills-adoption-analysis.md) |
-| Plugins + Cowork | [CC-cowork-plugins-enterprise-analysis.md](CC-cowork-plugins-enterprise-analysis.md) |
-| Chrome extension | [CC-chrome-extension-analysis.md](CC-chrome-extension-analysis.md) |
-| Hooks system (all events) | [CC-hooks-system-analysis.md](CC-hooks-system-analysis.md) |
-| Opus 4.6 + 1M context | [CC-extended-context-analysis.md](CC-extended-context-analysis.md) |
-| Task system with dependencies | [CC-agent-teams-orchestration.md](CC-agent-teams-orchestration.md) |
+| Remote Control (`claude remote-control`) | [CC-remote-control-analysis.md](execution-infrastructure/CC-remote-control-analysis.md) |
+| Agent Teams (TeamCreate, Task tools) | [CC-agent-teams-orchestration.md](agent-orchestration/CC-agent-teams-orchestration.md) |
+| Fast mode (Opus 4.6) | [CC-fast-mode-analysis.md](configuration/CC-fast-mode-analysis.md) |
+| Auto memory + CLAUDE.md hierarchy | [CC-memory-system-analysis.md](context-memory/CC-memory-system-analysis.md) |
+| Cloud sessions (`claude --remote`) | [CC-cloud-sessions-analysis.md](execution-infrastructure/CC-cloud-sessions-analysis.md) |
+| Skills (auto-discovery, SKILL.md) | [CC-skills-adoption-analysis.md](agent-orchestration/CC-skills-adoption-analysis.md) |
+| Plugins + Cowork | [CC-cowork-plugins-enterprise-analysis.md](packaging-enterprise/CC-cowork-plugins-enterprise-analysis.md) |
+| Chrome extension | [CC-chrome-extension-analysis.md](packaging-enterprise/CC-chrome-extension-analysis.md) |
+| Hooks system (all events) | [CC-hooks-system-analysis.md](configuration/CC-hooks-system-analysis.md) |
+| Opus 4.6 + 1M context | [CC-extended-context-analysis.md](context-memory/CC-extended-context-analysis.md) |
+| Task system with dependencies | [CC-agent-teams-orchestration.md](agent-orchestration/CC-agent-teams-orchestration.md) |
 
 <!-- markdownlint-enable MD013 -->
 

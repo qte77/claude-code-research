@@ -108,12 +108,14 @@ Hooks are typically introduced through:
 
 ### Potential Integration
 
+Replace `your-validation-command` with the validation command for your project (e.g., `make validate`, `make quick_validate`, or a direct invocation of your linter/test runner):
+
 ```json
 {
   "hooks": {
     "Stop": [
       {
-        "command": "make quick_validate",
+        "command": "your-validation-command",
         "once": true
       }
     ],
@@ -137,5 +139,5 @@ resolved or artifact-based collection proves insufficient.
 - [CC Hooks docs](https://code.claude.com/docs/en/hooks)
 - [CC Settings docs](https://code.claude.com/docs/en/settings)
 - [CC Agent Teams docs](https://code.claude.com/docs/en/agent-teams) (TeammateIdle, TaskCompleted hooks)
-- [CC-agent-teams-orchestration.md](CC-agent-teams-orchestration.md) (Agent Teams analysis)
-- [CC-ralph-enhancement-research.md](CC-ralph-enhancement-research.md) (Stop hook pattern for autonomous loops)
+- [CC-agent-teams-orchestration.md](../agent-orchestration/CC-agent-teams-orchestration.md) (Agent Teams analysis)
+- [CC-ralph-enhancement-research.md](../agent-orchestration/CC-ralph-enhancement-research.md) (Stop hook pattern for autonomous loops)

@@ -39,7 +39,7 @@ uses standard rates until context exceeds 200K tokens. Beyond 200K:
 ### Interaction with Fast Mode
 
 Fast mode pricing splits at the same 200K boundary — see pricing table in
-[CC-fast-mode-analysis.md](CC-fast-mode-analysis.md#pricing). The 1M window
+[CC-fast-mode-analysis.md](../configuration/CC-fast-mode-analysis.md#pricing). The 1M window
 extends the upper-tier pricing zone from 200K to 1M tokens. Fast mode is
 compatible with the full 1M context (confirmed v2.1.50).
 
@@ -102,5 +102,5 @@ accidental long-context charges.
 - [CC Costs](https://code.claude.com/docs/en/costs)
 - [Long-context pricing](https://platform.claude.com/docs/en/about-claude/pricing#long-context-pricing)
 - [Long-context rate limits](https://platform.claude.com/docs/en/api/rate-limits#long-context-rate-limits)
-- [CC-fast-mode-analysis.md](CC-fast-mode-analysis.md) — fast mode pricing tiers
-- [CC-model-provider-configuration.md](CC-model-provider-configuration.md) — model env vars
+- [CC-fast-mode-analysis.md](../configuration/CC-fast-mode-analysis.md) — fast mode pricing tiers
+- [CC-model-provider-configuration.md](../configuration/CC-model-provider-configuration.md) — model env vars
