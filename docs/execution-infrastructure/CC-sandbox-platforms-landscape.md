@@ -47,8 +47,9 @@ enforcement via bubblewrap (Linux/WSL2) or Seatbelt (macOS). Zero-cost, zero-set
 on macOS; requires `apt install bubblewrap socat` on Linux. Sufficient for
 local-first workflows.
 
-The standalone `@anthropic-ai/sandbox-runtime` npm package extends this outside CC
-(e.g., for MCP servers). Same isolation primitives, different entry point.
+The standalone `@anthropic-ai/sandbox-runtime` npm package extends this
+outside CC (e.g., for MCP servers). Same isolation primitives, different
+entry point.
 
 ### OpenSandbox (Alibaba)
 
@@ -178,8 +179,9 @@ CC's built-in sandboxing and these platforms solve **different problems**:
 - **CC sandboxing** = enforcement layer (what can an agent do on your machine?)
 - **External platforms** = execution layer (where does the agent run?)
 
-They compose: you can run CC locally with bubblewrap sandboxing, or run CC inside an
-OpenSandbox/E2B/Sprites environment that provides its own isolation. The external
+They compose: you can run CC locally with bubblewrap sandboxing, or run CC
+inside an OpenSandbox/E2B/Sprites environment that provides its own
+isolation. The external
 platform's isolation is additive — it doesn't replace CC's permission model.
 
 ## References

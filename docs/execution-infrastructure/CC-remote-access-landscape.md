@@ -10,7 +10,10 @@ updated: 2026-03-08
 
 ## Problem Statement
 
-Autonomous development loops and CC teams runs are long-running interactive sessions. Currently, the developer must stay at the terminal to provide input, approve permissions, or steer when stuck. Remote access enables monitoring and steering from phone/web without being desk-bound.
+Autonomous development loops and CC teams runs are long-running interactive
+sessions. Currently, the developer must stay at the terminal to provide
+input, approve permissions, or steer when stuck. Remote access enables
+monitoring and steering from phone/web without being desk-bound.
 
 ## Options Compared
 
@@ -38,49 +41,84 @@ Autonomous development loops and CC teams runs are long-running interactive sess
 
 ### CC Remote Control (Native)
 
-Already analyzed in [CC-remote-control-analysis.md](CC-remote-control-analysis.md). Built-in, zero-cost, zero-setup. Limitation: no offline continuation — laptop must stay on and connected.
+Already analyzed in
+[CC-remote-control-analysis.md](CC-remote-control-analysis.md). Built-in,
+zero-cost, zero-setup. Limitation: no offline continuation — laptop must
+stay on and connected.
 
 ### Omnara
 
 - **YC S25 startup** (San Francisco, 3-person team) ([source][omnara-yc])
-- **Pivoted**: Original open-source CLI wrapper (`omnara-ai/omnara`, Apache-2.0) is **archived and unmaintained** as of late 2025. New version built on Claude Agent SDK as a standalone platform ([source][omnara-gh])
-- **Key differentiator**: Cloud sandbox failover — if laptop goes offline, session continues in hosted sandbox. Code state preserved via git commits ([source][omnara-techmonk])
-- **Architecture**: Headless daemon on local machine → outbound WebSocket → Omnara server → web/mobile clients ([source][omnara-hn])
-- **Security concern**: No end-to-end encryption. Conversation state and code diffs transit through Omnara servers ([source][omnara-techmonk])
-- **Voice**: Two-way voice coding mode for hands-free interaction ([source][omnara-hiretop])
-- **Localhost previews**: Preview dev server on phone without SSH tunnels ([source][omnara-appstore])
-- **Pricing**: Now free. Previously 10 free sessions/month, $20/month unlimited ([source][omnara-hn]). Local runs use your own Claude/Codex tokens
+- **Pivoted**: Original open-source CLI wrapper (`omnara-ai/omnara`,
+  Apache-2.0) is **archived and unmaintained** as of late 2025. New
+  version built on Claude Agent SDK as a standalone platform
+  ([source][omnara-gh])
+- **Key differentiator**: Cloud sandbox failover — if laptop goes
+  offline, session continues in hosted sandbox. Code state preserved
+  via git commits ([source][omnara-techmonk])
+- **Architecture**: Headless daemon on local machine → outbound
+  WebSocket → Omnara server → web/mobile clients
+  ([source][omnara-hn])
+- **Security concern**: No end-to-end encryption. Conversation state
+  and code diffs transit through Omnara servers
+  ([source][omnara-techmonk])
+- **Voice**: Two-way voice coding mode for hands-free interaction
+  ([source][omnara-hiretop])
+- **Localhost previews**: Preview dev server on phone without SSH
+  tunnels ([source][omnara-appstore])
+- **Pricing**: Now free. Previously 10 free sessions/month, $20/month
+  unlimited ([source][omnara-hn]). Local runs use your own
+  Claude/Codex tokens
 
 ### CloudCLI
 
-- **Open source** (7.8k GitHub stars), cloud or self-hosted dev environments ([source][cloudcli])
-- **Multi-tool**: Works with Claude Code, Cursor, Codex, VS Code via SSH ([source][cloudcli])
-- **Cloud-first by default**: Managed hosting or self-hosted; sessions run in VMs, not local machine ([source][cloudcli])
+- **Open source** (7.8k GitHub stars), cloud or self-hosted dev
+  environments ([source][cloudcli])
+- **Multi-tool**: Works with Claude Code, Cursor, Codex, VS Code via SSH
+  ([source][cloudcli])
+- **Cloud-first by default**: Managed hosting or self-hosted; sessions run
+  in VMs, not local machine ([source][cloudcli])
 
 ### Happy Coder
 
-- **Free, open-source** (MIT license, fully auditable at [github.com/slopus/happy][happy-gh]) ([source][happy])
-- **E2E encryption**: TweetNaCl (same protocol as Signal). Relay server only sees encrypted blobs. Keys never leave device ([source][happy-hn])
-- **Zero-knowledge architecture**: Code and prompts never touch the server in plaintext ([source][happy])
-- **Push notifications**: Alerts when CC needs permission or encounters errors ([source][happy])
+- **Free, open-source** (MIT license, fully auditable at
+  [github.com/slopus/happy][happy-gh]) ([source][happy])
+- **E2E encryption**: TweetNaCl (same protocol as Signal). Relay server
+  only sees encrypted blobs. Keys never leave device ([source][happy-hn])
+- **Zero-knowledge architecture**: Code and prompts never touch the server
+  in plaintext ([source][happy])
+- **Push notifications**: Alerts when CC needs permission or encounters
+  errors ([source][happy])
 - **Voice input**: Built-in voice-to-text for prompts ([source][zilliz])
-- **Multi-session**: Spawn and control multiple CC instances in parallel ([source][happy])
-- **Cross-platform**: iOS, Android, Web — instant device switching with one keypress ([source][happy])
-- **Setup**: `npm install -g happy-coder` then run `happy` instead of `claude`. Scan QR to pair ([source][happy])
-- **No telemetry**: All tracking explicitly disabled ([source][happy-gh])
+- **Multi-session**: Spawn and control multiple CC instances in parallel
+  ([source][happy])
+- **Cross-platform**: iOS, Android, Web — instant device switching with
+  one keypress ([source][happy])
+- **Setup**: `npm install -g happy-coder` then run `happy` instead of
+  `claude`. Scan QR to pair ([source][happy])
+- **No telemetry**: All tracking explicitly disabled
+  ([source][happy-gh])
 
 ### Emdash
 
-- **Multi-agent orchestrator**: Runs numerous coding agents simultaneously, each in its own git worktree ([source][emdash])
-- **Provider-agnostic**: Select from AI models and CLIs (CC, Codex) ([source][emdash])
-- **Issue integration**: Assign issues from Linear, GitHub, or Jira to agents and observe them working in parallel ([source][emdash])
-- **Not a remote access tool per se** — more an orchestration layer that complements remote access
+- **Multi-agent orchestrator**: Runs numerous coding agents
+  simultaneously, each in its own git worktree ([source][emdash])
+- **Provider-agnostic**: Select from AI models and CLIs (CC, Codex)
+  ([source][emdash])
+- **Issue integration**: Assign issues from Linear, GitHub, or Jira to
+  agents and observe them working in parallel ([source][emdash])
+- **Not a remote access tool per se** — more an orchestration layer that
+  complements remote access
 
 ### DIY (tmux + Tailscale/SSH)
 
-- **Maximum control**: tmux session + Tailscale/WireGuard VPN + mobile terminal (Termius, Blink)
-- **No external dependencies**: No third-party servers handling code/conversations
-- **Overhead**: Manual setup, no push notifications, raw terminal on mobile ("terminal on a phone screen is nobody's idea of a good time" ([source][zilliz]))
+- **Maximum control**: tmux session + Tailscale/WireGuard VPN + mobile
+  terminal (Termius, Blink)
+- **No external dependencies**: No third-party servers handling
+  code/conversations
+- **Overhead**: Manual setup, no push notifications, raw terminal on
+  mobile ("terminal on a phone screen is nobody's idea of a good time"
+  ([source][zilliz]))
 - **Already possible**: No new tooling needed if tmux is available
 
 ## Workflow Fit by Use Case
@@ -124,10 +162,15 @@ sleeps mid-session.**
 
 ### Actionable Next Steps
 
-1. **Try CC Remote Control** — see [CC-remote-control-analysis.md](CC-remote-control-analysis.md) for setup and decision rationale
-2. **If you need push notifications or E2E encryption**: Install Happy Coder (`npm i -g happy-coder`)
-3. **Measure**: Does the laptop actually sleep during long runs? If not, RC or Happy Coder is sufficient
-4. **If sleep is a problem**: Evaluate Omnara's cloud sandbox failover on a non-sensitive test repo first
+1. **Try CC Remote Control** — see
+   [CC-remote-control-analysis.md](CC-remote-control-analysis.md) for
+   setup and decision rationale
+2. **If you need push notifications or E2E encryption**: Install Happy
+   Coder (`npm i -g happy-coder`)
+3. **Measure**: Does the laptop actually sleep during long runs? If not,
+   RC or Happy Coder is sufficient
+4. **If sleep is a problem**: Evaluate Omnara's cloud sandbox failover on
+   a non-sensitive test repo first
 
 ## Supporting Tools
 
