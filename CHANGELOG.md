@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `CC-changelog-feature-scan.md`: add `[yyyy-MM-dd]` dates to main sections (changelog-style)
+- `CC-changelog-feature-scan.md`: group sections under `[yyyy-MM-dd]` date heading
 
 ## [0.3.0] - 2026-03-12
 
