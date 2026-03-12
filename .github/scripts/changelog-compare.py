@@ -8,11 +8,12 @@ Usage:
     python changelog-compare.py \\
         --changelog PATH \\
         --scan-doc PATH \\
-        --docs-dir PATH
+        --docs-dir PATH \\
+        [--update-scan-doc]
 
 Exit codes:
     0 = no new uncovered features
-    1 = new features found (workflow should open an issue)
+    1 = new features found (workflow should open a PR)
 """
 
 import argparse
@@ -52,6 +53,28 @@ def parse_scanned_version(scan_doc_path: Path) -> str:
         )
 
     return purpose_match.group(2)  # end of range
+
+
+def update_scanned_version(scan_doc_path: Path, new_end_version: str) -> None:
+    """Bump the end version in the scan doc frontmatter.
+
+    Replaces the version range end in the ``purpose:`` field, e.g.
+    ``v2.1.0–2.1.71`` becomes ``v2.1.0–2.1.85``.
+    """
+    text = scan_doc_path.read_text(encoding="utf-8")
+    updated = re.sub(
+        r"(purpose:.*?v\d+\.\d+\.\d+[–\-])\d+\.\d+\.\d+",
+        rf"\g<1>{new_end_version}",
+        text,
+        count=1,
+    )
+    if updated == text:
+        print(
+            f"WARNING: Could not update version in {scan_doc_path}", file=sys.stderr
+        )
+        return
+    scan_doc_path.write_text(updated, encoding="utf-8")
+    print(f"Updated scan doc version range end to {new_end_version}", file=sys.stderr)
 
 
 def version_tuple(v: str) -> tuple[int, ...]:
@@ -96,7 +119,7 @@ def parse_changelog_versions(changelog_path: Path) -> list[tuple[str, list[str]]
 
 
 def collect_doc_index(docs_dir: Path) -> dict[str, list[str]]:
-    """Build an index of doc file paths → list of H2/H3 headings.
+    """Build an index of doc file paths to list of H2/H3 headings.
 
     Only scans ``*.md`` files under ``docs_dir`` recursively.
     Returns ``{relative_path: [heading_text, ...]}``.
@@ -236,6 +259,7 @@ def build_report(
 # ---------------------------------------------------------------------------
 
 def main() -> None:
+    """Entry point for the changelog comparison script."""
     parser = argparse.ArgumentParser(
         description="Compare CC CHANGELOG.md against scanned version range."
     )
@@ -250,6 +274,10 @@ def main() -> None:
     parser.add_argument(
         "--docs-dir", required=True, type=Path,
         help="Path to docs/ directory to search for coverage"
+    )
+    parser.add_argument(
+        "--update-scan-doc", action="store_true",
+        help="Bump the scan doc frontmatter to the newest changelog version"
     )
     args = parser.parse_args()
 
@@ -274,6 +302,11 @@ def main() -> None:
     print(f"Docs indexed: {len(doc_index)}", file=sys.stderr)
 
     report, has_uncovered = build_report(new_versions, doc_index, last_scanned)
+
+    # Bump scan doc version if requested and there are new versions
+    if args.update_scan_doc and new_versions:
+        newest_version = new_versions[0][0]  # already sorted descending
+        update_scanned_version(args.scan_doc, newest_version)
 
     # Output report to stdout (captured by workflow)
     print(report)
