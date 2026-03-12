@@ -171,6 +171,130 @@ jobs:
         run: claude -p "your prompt" --output-format json
 ```
 
+## Self-Hosted Runners
+
+### When to Use Self-Hosted Runners
+
+GitHub-hosted runners (`ubuntu-latest`) work for most CC workloads but have limitations:
+
+| Concern | GitHub-Hosted | Self-Hosted |
+|---|---|---|
+| **Custom hardware** | Fixed specs (2-4 vCPU) | Any spec (GPU, high-memory) |
+| **Compliance** | Shared infrastructure | On-premises, air-gapped capable |
+| **Cost at scale** | Per-minute billing | Free with GHA (you pay infrastructure) |
+| **Pre-installed tools** | Fresh VM each run | Persistent or pre-baked images |
+| **Network access** | Public internet only | Private network, VPN, internal APIs |
+
+Self-hosted runners can be physical, virtual, in a container, on-premises, or in a cloud. They're free to use with GitHub Actions — you pay only for your own infrastructure ([source][gh-runners]).
+
+### Supported Platforms
+
+Self-hosted runners support a wide range of OS and architecture combinations ([source][gh-runners-req]):
+
+| OS | Architectures |
+|---|---|
+| Linux | x64, ARM64 |
+| macOS | x64, ARM64 (Apple Silicon) |
+| Windows | x64, ARM64 |
+
+### Deployment Levels
+
+| Level | Scope | Use Case |
+|---|---|---|
+| Repository | Single repo | Project-specific CC workflows |
+| Organization | Multiple repos | Shared CC runner pool across team |
+| Enterprise | Multiple orgs | Centralized CC infrastructure |
+
+### Ephemeral Runners
+
+Use `--ephemeral` for clean CC execution per job — the runner picks up one job and then un-registers itself ([source][gh-runners]):
+
+```bash
+./config.sh --url https://github.com/ORG/REPO --token TOKEN --ephemeral
+```
+
+**CC-specific benefit**: Each job starts with a clean filesystem. No risk of CC state leakage (auto memory, cached plugins, session artifacts) between jobs.
+
+**Trade-off**: Longer startup time (re-register + re-install CC per job). Mitigate by pre-baking CC into the runner image.
+
+### Network Requirements
+
+Self-hosted runners need outbound HTTPS (443) to these domains ([source][gh-runners-net]):
+
+| Domain | Purpose |
+|---|---|
+| `github.com` | Repository access |
+| `api.github.com` | API calls |
+| `*.actions.githubusercontent.com` | Action downloads, artifacts |
+| `ghcr.io`, `*.ghcr.io` | Container registry |
+| `objects.githubusercontent.com` | Release asset downloads |
+
+**CC-specific additions**:
+
+| Domain | Purpose |
+|---|---|
+| `api.anthropic.com` | Anthropic API (primary) |
+| `claude.ai` | CC installer + auto-updates |
+| `storage.googleapis.com` | CC binary distribution |
+| OpenRouter / Bedrock / Vertex endpoints | If using fallback providers |
+
+### Autoscaling Options
+
+| Method | Infrastructure | Complexity | Best For |
+|---|---|---|---|
+| **ARC (Actions Runner Controller)** | Kubernetes | High | Large-scale K8s environments |
+| **Runner Scale Sets** | Kubernetes (ARC v2) | Medium | Modern K8s with event-driven scaling |
+| **Webhook-based** | Any (Lambda, Cloud Functions) | Medium | Serverless / cloud-native |
+| **Scheduled** | Any (cron, systemd) | Low | Predictable workloads |
+
+### Security Considerations
+
+- Runners receive **automatic updates** for the runner application only (within 30 days). OS and other software is your responsibility ([source][gh-runners])
+- **Don't need a clean instance** for every job — but for CC, ephemeral mode is recommended to prevent state leakage
+- **Log forwarding**: Configure centralized logging for audit trails of CC command execution
+- **Minimal permissions**: Run the runner process as a dedicated non-root user
+- Runners don't have access to other runners' data at the GitHub level, but shared infrastructure must be hardened
+
+### CC-Specific Runner Configuration
+
+```dockerfile
+FROM ubuntu:22.04
+
+ARG CLAUDE_CODE_VERSION=2.1.42
+ARG RUNNER_VERSION=2.321.0
+
+# Install runner
+RUN mkdir /actions-runner && cd /actions-runner \
+    && curl -o runner.tar.gz -L \
+       https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
+    && tar xzf runner.tar.gz && rm runner.tar.gz
+
+# Install CC (pinned version)
+RUN curl -fsSL https://claude.ai/install.sh | bash -s ${CLAUDE_CODE_VERSION}
+
+# Disable auto-updates — version is baked into the image
+ENV DISABLE_AUTOUPDATER=1
+
+# API key injected at runtime
+# docker run -e ANTHROPIC_API_KEY="$KEY" ...
+```
+
+**Checklist for self-hosted CC runners**:
+
+- [ ] Pin CC version in runner image (native installer or npm)
+- [ ] Set `DISABLE_AUTOUPDATER=1`
+- [ ] Inject `ANTHROPIC_API_KEY` at runtime, never bake into image
+- [ ] Use `--ephemeral` for clean state per job
+- [ ] Allow outbound HTTPS to `api.anthropic.com` and `claude.ai`
+- [ ] Set `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` if minimizing outbound calls
+- [ ] Configure log forwarding for CC command audit trails
+- [ ] Set resource limits (memory, CPU) appropriate for CC workloads
+
+### Community Tools
+
+- **[claude-code-runner](https://github.com/anthropics/claude-code)** — self-hosted HTTP task runner for CC; wraps `claude -p` behind an API endpoint
+- **[ClaudeBox](https://github.com/anthropics/claude-code)** — Docker-based dev environment for isolated CC execution
+
 ## Binary Integrity Verification
 
 SHA256 checksums are published for each release ([source][cc-setup]):
@@ -258,9 +382,13 @@ For scenarios where Anthropic may be entirely unavailable (business discontinuat
 - [CC Docker Tutorial (DataCamp)][datacamp-docker]
 - [CC Model & Provider Configuration](../configuration/CC-model-provider-configuration.md)
 - [Local setup guide][local-setup]
+- [GitHub Self-Hosted Runners][gh-runners]
 
 [cc-setup]: https://code.claude.com/docs/en/setup
 [cc-action]: https://github.com/anthropics/claude-code-action
 [npm-cc]: https://www.npmjs.com/package/@anthropic-ai/claude-code
 [datacamp-docker]: https://www.datacamp.com/tutorial/claude-code-docker
 [local-setup]: https://medium.com/@luongnv89/run-claude-code-on-local-cloud-models-in-5-minutes-ollama-openrouter-llama-cpp-6dfeaee03cda
+[gh-runners]: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners
+[gh-runners-req]: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#requirements-for-self-hosted-runner-machines
+[gh-runners-net]: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#communication-requirements
