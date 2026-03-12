@@ -190,6 +190,49 @@ All project-specific behavior (review criteria, coding standards, patterns) is d
 - Set workflow-level timeouts to avoid runaway jobs
 - Use GitHub concurrency controls to limit parallel runs
 
+### Runner Sizing & Pricing
+
+Standard runners (`ubuntu-latest`) are 2-core/7 GB RAM. For large repos or complex Claude tasks, **larger runners** provide up to 96 cores and proportionally more RAM/disk. Requires GitHub Team or Enterprise Cloud plan ([source][gh-larger-runners]).
+
+<!-- markdownlint-disable MD013 -->
+
+| Runner | Cores | Per-min (Linux x64) | Notes |
+|---|---|---|---|
+| Standard | 2 | $0.006 | Included minutes on private repos |
+| Larger 4-core | 4 | $0.012 | No included minutes; per-minute only |
+| Larger 16-core | 16 | $0.048 | Good balance for CC agent workloads |
+| Larger 64-core | 64 | $0.168 | Heavy parallel / large codebase |
+| GPU (4-core + T4) | 4 | $0.052 | ML workloads only |
+| arm64 2-core | 2 | $0.005 | Cheapest option |
+
+<!-- markdownlint-enable MD013 -->
+
+([source][gh-runner-pricing])
+
+**Key billing facts**: Minutes rounded up to nearest whole minute. Larger runners are *not* free for public repos and *cannot* use included plan minutes. No extra cost for static IPs on larger runners ([source][gh-runner-pricing]).
+
+**Selecting a larger runner** — use the runner label directly in `runs-on` ([source][gh-larger-runner-jobs]):
+
+```yaml
+jobs:
+  claude:
+    runs-on: ubuntu-24.04-16core  # larger runner label
+    steps:
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+Or target a runner group:
+
+```yaml
+runs-on:
+  group: my-runner-group
+  labels: ubuntu-24.04-16core
+```
+
+**CC-specific guidance**: Claude Code is primarily I/O-bound (API calls to Anthropic), not CPU-bound. Standard 2-core runners are sufficient for most `@claude` workflows. Consider larger runners only when: (1) the repo checkout + dependency install is slow, (2) Claude invokes heavy build/test commands via Bash, or (3) you need static IPs for network-restricted environments.
+
 ## Fit Assessment
 
 **Adopt for `@claude` interactive use.** The mention-based workflow is low-friction — install app, add secret, copy workflow, start mentioning. Ideal for PR feedback, issue triage, and ad-hoc code questions.
@@ -215,3 +258,6 @@ All project-specific behavior (review criteria, coding standards, patterns) is d
 [cc-action-security]: https://github.com/anthropics/claude-code-action/blob/main/docs/security.md
 [gh-discussion-578]: https://github.com/anthropics/claude-code-action/discussions/578
 [dev-to-pr]: https://dev.to/myougatheaxo/automate-your-entire-pr-workflow-with-claude-code-description-review-tests-1i41
+[gh-larger-runners]: https://docs.github.com/en/actions/concepts/runners/larger-runners
+[gh-runner-pricing]: https://docs.github.com/en/billing/reference/actions-runner-pricing
+[gh-larger-runner-jobs]: https://docs.github.com/en/actions/using-github-hosted-runners/using-larger-runners/running-jobs-on-larger-runners
