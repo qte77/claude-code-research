@@ -9,11 +9,11 @@ validated_links: 2026-03-12
 
 **Status**: Research (informational — feeds into adoption plan)
 
-## Scan Scope
+## Scan Scope [2026-03-07]
 
 Cross-referenced CHANGELOG.md (v2.1.0–2.1.71, Jan–Mar 2026) against 18 analysis docs in this directory. Features below are **not yet covered** and potentially relevant to projects using Claude Code.
 
-## High Relevance (directly applicable)
+## High Relevance (directly applicable) [2026-03-07]
 
 <!-- markdownlint-disable MD013 -->
 
@@ -71,7 +71,7 @@ Agents can have persistent memory storage via frontmatter configuration. ([sourc
 
 **Relevance**: Agent definitions in `.claude/agents/` could maintain state across sessions. Useful for agents that accumulate domain knowledge over time (e.g., a code-reviewer that learns codebase patterns).
 
-## Medium Relevance (useful, not urgent)
+## Medium Relevance (useful, not urgent) [2026-03-07]
 
 ### `/simplify` and `/batch` Bundled Commands (v2.1.63)
 
@@ -109,7 +109,7 @@ Hook fires when CC configuration changes — useful for security auditing. ([sou
 
 **Relevance**: Track configuration drift. Low priority unless security auditing of CC config becomes a concern.
 
-## Already Covered by Existing Research
+## Already Covered by Existing Research [2026-03-07]
 
 | Feature | Covered In |
 | ------- | ---------- |
@@ -127,7 +127,7 @@ Hook fires when CC configuration changes — useful for security auditing. ([sou
 
 <!-- markdownlint-enable MD013 -->
 
-## References
+## References [2026-03-07]
 
 - [CC CHANGELOG.md][changelog]
 - [claudelog.com changelog][claudelog]
