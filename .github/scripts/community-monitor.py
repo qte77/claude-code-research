@@ -17,12 +17,19 @@ Exit codes:
 """
 
 import argparse
-import hashlib
-import json
 import re
 import sys
-import urllib.request
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from lib.monitor_utils import (
+    build_doc_keywords,
+    entry_fingerprint,
+    fetch_text,
+    is_covered,
+    load_state,
+    save_state,
+)
 
 # ---------------------------------------------------------------------------
 # Source definitions
@@ -48,20 +55,6 @@ SOURCES: list[dict[str, str]] = [
         "description": "Installable plugin registry with marketplace format",
     },
 ]
-
-
-# ---------------------------------------------------------------------------
-# Fetching
-# ---------------------------------------------------------------------------
-
-def fetch_source(url: str, timeout: int = 30) -> str:
-    """Fetch text content from a URL."""
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "cc-community-monitor/1.0"},
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read().decode("utf-8", errors="replace")
 
 
 # ---------------------------------------------------------------------------
@@ -152,70 +145,6 @@ def extract_html_entries(text: str) -> list[dict[str, str]]:
             })
 
     return entries
-
-
-# ---------------------------------------------------------------------------
-# Coverage checking
-# ---------------------------------------------------------------------------
-
-def build_doc_keywords(community_docs_dir: Path) -> set[str]:
-    """Build a keyword set from existing community docs."""
-    keywords: set[str] = set()
-    for md_file in sorted(community_docs_dir.rglob("*.md")):
-        text = md_file.read_text(encoding="utf-8", errors="replace")
-        words = re.findall(r"[A-Za-z0-9_/-]{4,}", text)
-        keywords.update(w.lower() for w in words)
-    return keywords
-
-
-def entry_fingerprint(entry: dict[str, str]) -> str:
-    """Generate a stable fingerprint for an entry."""
-    key = f"{entry.get('name', '')}|{entry.get('url', '')}".lower()
-    return hashlib.sha256(key.encode()).hexdigest()[:16]
-
-
-def is_covered(entry: dict[str, str], doc_keywords: set[str]) -> bool:
-    """Check if an entry's key terms appear in existing docs."""
-    entry_text = f"{entry.get('name', '')} {entry.get('description', '')}"
-    entry_words = {
-        w.lower()
-        for w in re.findall(r"[A-Za-z0-9_/-]{4,}", entry_text)
-    }
-    # Remove common words that match too broadly
-    noise = {
-        "claude", "code", "with", "that", "this", "from", "have",
-        "been", "will", "your", "more", "tool", "tools", "https",
-        "github", "added", "fixed", "support", "feature",
-    }
-    entry_words -= noise
-
-    if not entry_words:
-        return True  # No meaningful keywords to match
-
-    overlap = entry_words & doc_keywords
-    # Consider covered if >40% of entry keywords appear in docs
-    return len(overlap) / len(entry_words) > 0.4
-
-
-# ---------------------------------------------------------------------------
-# State management
-# ---------------------------------------------------------------------------
-
-def load_state(state_file: Path) -> dict[str, list[str]]:
-    """Load previously seen entry fingerprints per source."""
-    if state_file.exists():
-        return json.loads(state_file.read_text(encoding="utf-8"))
-    return {}
-
-
-def save_state(
-    state_file: Path, state: dict[str, list[str]]
-) -> None:
-    """Save seen entry fingerprints."""
-    state_file.parent.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(
-        json.dumps(state, indent=2) + "\n", encoding="utf-8"
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -322,7 +251,7 @@ def main() -> None:
         print(f"Fetching {name}: {source['url']}", file=sys.stderr)
 
         try:
-            content = fetch_source(source["url"])
+            content = fetch_text(source["url"])
         except Exception as e:
             print(f"WARNING: Failed to fetch {name}: {e}", file=sys.stderr)
             source_results.append({
