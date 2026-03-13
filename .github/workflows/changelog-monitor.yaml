@@ -37,7 +37,7 @@ jobs:
           set +e
           python .github/scripts/changelog-compare.py \
             --changelog /tmp/CC-CHANGELOG.md \
-            --scan-doc docs/CC-changelog-feature-scan.md \
+            --scan-doc docs/cc-native/CC-changelog-feature-scan.md \
             --docs-dir docs/ \
             --update-scan-doc \
             > /tmp/report.md 2>/tmp/compare-stderr.txt
@@ -68,12 +68,12 @@ jobs:
           git checkout -b "$BRANCH"
 
           # Copy report to repo
-          cp /tmp/report.md "docs/changelog-triage-${DATE_STAMP}.md"
+          cp /tmp/report.md "docs/cc-native/changelog-triage-${DATE_STAMP}.md"
 
           # Stage updated scan doc (frontmatter bumped by --update-scan-doc)
           # and the new triage report
-          git add docs/CC-changelog-feature-scan.md
-          git add "docs/changelog-triage-${DATE_STAMP}.md"
+          git add docs/cc-native/CC-changelog-feature-scan.md
+          git add "docs/cc-native/changelog-triage-${DATE_STAMP}.md"
 
           git commit -m "chore: changelog triage ${DATE_STAMP}
 
@@ -94,5 +94,4 @@ jobs:
             --base main \
             --head "$BRANCH" \
             --title "chore: changelog triage ${DATE_STAMP}" \
-            --body-file /tmp/pr-body.md \
-            --label changelog-scan
+            --body-file /tmp/pr-body.md
