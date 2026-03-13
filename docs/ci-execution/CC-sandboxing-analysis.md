@@ -4,6 +4,8 @@ description: Analysis of CC sandboxing mechanics, configuration options, securit
 source: https://code.claude.com/docs/en/sandboxing, https://code.claude.com/docs/en/settings#sandbox-settings, https://code.claude.com/docs/en/security
 category: analysis
 created: 2026-03-07
+updated: 2026-03-12
+validated_links: 2026-03-12
 ---
 
 **Status**: Research (informational)

@@ -3,6 +3,8 @@ title: CC Hooks System Analysis
 source: https://code.claude.com/docs/en/hooks
 purpose: Analysis of Claude Code hooks system for automation, quality gates, and headless CC workflow integration.
 created: 2026-03-07
+updated: 2026-03-12
+validated_links: 2026-03-12
 ---
 
 **Status**: Generally available (v2.0.41+, extensively evolved through v2.1.71)
@@ -139,5 +141,5 @@ resolved or artifact-based collection proves insufficient.
 - [CC Hooks docs](https://code.claude.com/docs/en/hooks)
 - [CC Settings docs](https://code.claude.com/docs/en/settings)
 - [CC Agent Teams docs](https://code.claude.com/docs/en/agent-teams) (TeammateIdle, TaskCompleted hooks)
-- [CC-agent-teams-orchestration.md](../agent-orchestration/CC-agent-teams-orchestration.md) (Agent Teams analysis)
-- [CC-ralph-enhancement-research.md](../agent-orchestration/CC-ralph-enhancement-research.md) (Stop hook pattern for autonomous loops)
+- [CC-agent-teams-orchestration.md](../agents-skills/CC-agent-teams-orchestration.md) (Agent Teams analysis)
+- [CC-ralph-enhancement-research.md](../agents-skills/CC-ralph-enhancement-research.md) (Stop hook pattern for autonomous loops)

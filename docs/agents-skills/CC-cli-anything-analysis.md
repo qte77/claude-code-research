@@ -3,6 +3,8 @@ title: CC CLI-Anything Analysis
 source: https://github.com/HKUDS/CLI-Anything
 purpose: Evaluate CLI-Anything as a framework for generating agent-native CLIs from existing software, and its fit relative to .gitmodules, bun scripts, and Makefile recipes.
 created: 2026-03-12
+updated: 2026-03-12
+validated_links: 2026-03-12
 ---
 
 **Status**: Research (informational — monitor as ecosystem matures)
@@ -122,7 +124,7 @@ Worth revisiting if:
 ## References
 
 - [CLI-Anything (GitHub)][cli-anything]
-- [CC Plugin Packaging Research](../packaging-enterprise/CC-plugin-packaging-research.md)
+- [CC Plugin Packaging Research](../plugins-ecosystem/CC-plugin-packaging-research.md)
 - [CC Skills Adoption Analysis](CC-skills-adoption-analysis.md)
 
 [cli-anything]: https://github.com/HKUDS/CLI-Anything

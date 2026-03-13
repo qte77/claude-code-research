@@ -3,6 +3,8 @@ title: CC GitHub Actions — claude-code-action & Claude GitHub App
 source: https://code.claude.com/docs/en/github-actions, https://github.com/apps/claude, https://github.com/anthropics/claude-code-action/discussions/578, https://dev.to/myougatheaxo/automate-your-entire-pr-workflow-with-claude-code-description-review-tests-1i41
 purpose: Evaluate Claude Code GitHub Actions for PR automation, code review, issue triage, and scheduled workflows — setup, capabilities, limitations, and cost.
 created: 2026-03-12
+updated: 2026-03-12
+validated_links: 2026-03-12
 ---
 
 **Status**: Research (informational — not implementation requirements)
@@ -237,7 +239,7 @@ runs-on:
 
 **Adopt for `@claude` interactive use.** The mention-based workflow is low-friction — install app, add secret, copy workflow, start mentioning. Ideal for PR feedback, issue triage, and ad-hoc code questions.
 
-**Evaluate for automated PR review.** The prompt-driven mode on `pull_request: [opened, synchronize]` enables auto-review, but results post as comments, not GitHub review annotations. Compare with the [Code Review plugin](../packaging-enterprise/CC-official-plugins-landscape.md#code-review) for structured multi-agent scoring.
+**Evaluate for automated PR review.** The prompt-driven mode on `pull_request: [opened, synchronize]` enables auto-review, but results post as comments, not GitHub review annotations. Compare with the [Code Review plugin](../plugins-ecosystem/CC-official-plugins-landscape.md#code-review) for structured multi-agent scoring.
 
 **Defer for fully autonomous issue-to-PR.** PR creation is manual (button click). Until the action calls the PR creation API directly, fully unattended issue→branch→PR pipelines require wrapper scripts.
 
@@ -246,7 +248,7 @@ runs-on:
 ## Cross-References
 
 - Version pinning and self-hosted runners for GHA — [CC-version-pinning-resilience.md](CC-version-pinning-resilience.md#github-actions)
-- Official plugins (Code Review, Security Guidance) — [CC-official-plugins-landscape.md](../packaging-enterprise/CC-official-plugins-landscape.md)
+- Official plugins (Code Review, Security Guidance) — [CC-official-plugins-landscape.md](../plugins-ecosystem/CC-official-plugins-landscape.md)
 - Bash tool behavior inside GHA — [CC-bash-mode-analysis.md](../configuration/CC-bash-mode-analysis.md)
 - Cloud sessions as alternative execution — [CC-cloud-sessions-analysis.md](CC-cloud-sessions-analysis.md)
 
@@ -254,8 +256,6 @@ runs-on:
 
 [cc-gha-docs]: https://code.claude.com/docs/en/github-actions
 [claude-app]: https://github.com/apps/claude
-[cc-action-repo]: https://github.com/anthropics/claude-code-action
-[cc-action-security]: https://github.com/anthropics/claude-code-action/blob/main/docs/security.md
 [gh-discussion-578]: https://github.com/anthropics/claude-code-action/discussions/578
 [dev-to-pr]: https://dev.to/myougatheaxo/automate-your-entire-pr-workflow-with-claude-code-description-review-tests-1i41
 [gh-larger-runners]: https://docs.github.com/en/actions/concepts/runners/larger-runners

@@ -3,6 +3,8 @@ title: Ralph Loop Enhancement Research
 source: ralph/scripts/ralph.sh, ralph/README.md, external Ralph pattern research (ralph/README.md is project-specific; see external references below for the general pattern)
 purpose: Identify actionable enhancements to autonomous headless CC development loops (Ralph pattern) based on gap analysis and external pattern research.
 created: 2026-03-07
+updated: 2026-03-12
+validated_links: 2026-03-12
 ---
 
 **Status**: Research (informational — feeds into iteration planning)
@@ -32,7 +34,7 @@ These are patterns to watch for in any Ralph implementation — bugs or inconsis
 
 | Gap | Impact | Fix |
 | --- | ------ | --- |
-| **Shared `/tmp` paths across worktrees** | State-tracking files (baseline, retry context, TDD-verified directory) use fixed `/tmp` paths — concurrent worktrees overwrite each other | Namespace paths by worktree identity: `/tmp/claude/ralph_<worktree_hash>/` |
+| **Shared `/tmp` paths across worktrees** | State-tracking files (baseline, retry context, TDD-verified directory) use fixed `/tmp` paths — concurrent worktrees overwrite each other. Note: `.claude/` config duplication resolved by v2.1.63 (auto-shared across worktrees); only `/tmp` path namespacing remains as a gap | Namespace paths by worktree identity: `/tmp/claude/ralph_<worktree_hash>/` |
 | **Stale snapshot tests in teams mode** | Story A's baseline doesn't account for story B's concurrent changes | No clean fix without sequential validation; document as known limitation |
 | **File-conflict dependencies not auto-detected** | The PRD/story generation script doesn't auto-detect file overlaps between stories | Add an `--check-overlaps` flag to the story generation script that warns when stories share files without an explicit `depends_on` |
 
